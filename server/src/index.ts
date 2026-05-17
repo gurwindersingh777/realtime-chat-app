@@ -1,10 +1,12 @@
-import express from "express";
 import "dotenv/config"
+import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import type { ServerToClientEvents, ClientToServerEvents } from "../../shared/types"
 import cors from "cors"
-import mongoose from "mongoose";
+import { clerkMiddleware } from "@clerk/express";
+import { connectDB } from "./config/db";
+import authRouter from "./routes/auth.routes";
 
 const app = express()
 const httpServer = createServer(app)
@@ -16,14 +18,12 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpSer
   }
 })
 
+app.use(clerkMiddleware())
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }))
 app.use(express.json())
 
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
-
-mongoose.connect(process.env.MONGODB_URI!)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB error:', err))
+app.use('/api/auth', authRouter)
 
 io.on("connection", (socket) => {
   console.log('Socket connected:', socket.id)
@@ -32,8 +32,11 @@ io.on("connection", (socket) => {
   })
 })
 
+
 const PORT = process.env.PORT || 5000
 
-httpServer.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
-});
+connectDB().then(() => {
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`)
+  })
+})
