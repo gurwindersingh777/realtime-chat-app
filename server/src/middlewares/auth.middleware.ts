@@ -1,15 +1,19 @@
 import { Request, Response, NextFunction } from 'express'
-import { requireAuth } from '@clerk/express'
+import { getAuth } from '@clerk/express'
 
-export const protect = [
-  requireAuth(),
-  (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.auth?.userId
+export const protect = (req: Request, res: Response, next: NextFunction) => {
+  try {
+
+    const { userId } = getAuth(req)
     if (!userId) {
-      res.status(401).json({ message: 'Unauthorized' })
-      return
+      return res.status(401).json({ message: 'Unauthorized', })
     }
+
     req.userId = userId
+
     next()
+  } catch (error) {
+    console.log(error)
+    return res.status(401).json({ message: 'Unauthorized' })
   }
-]
+} 
