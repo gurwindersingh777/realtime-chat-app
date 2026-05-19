@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose"
+import mongoose, { Document, models } from "mongoose"
 
 export interface UserDocument extends Document {
   clerkId: string
@@ -46,4 +46,4 @@ const UserSchema = new mongoose.Schema<UserDocument>(
   }
 )
 
-export const User = mongoose.model<UserDocument>('User', UserSchema)
+export const User = models.User || mongoose.model<UserDocument>('User', UserSchema) 

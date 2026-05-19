@@ -7,6 +7,9 @@ import cors from "cors"
 import { clerkMiddleware } from "@clerk/express";
 import { connectDB } from "./config/db";
 import authRouter from "./routes/auth.routes";
+import userRouter from "./routes/user.routes";
+import messageRouter from "./routes/message.routes";
+import conversationRouter from "./routes/conversation.routes";
 
 const app = express()
 const httpServer = createServer(app)
@@ -21,6 +24,10 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpSer
 app.use(clerkMiddleware())
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }))
 app.use(express.json())
+app.use('/api/auth', authRouter)
+app.use('/api/conversations', conversationRouter)
+app.use('/api/messages', messageRouter)
+app.use('/api/users', userRouter)
 
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
 app.use('/api/auth', authRouter)
