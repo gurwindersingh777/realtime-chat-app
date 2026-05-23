@@ -38,10 +38,16 @@ export interface ServerToClientEvents {
   'typing-stop': (data: { userId: string; conversationId: string }) => void
   'message-delivered': (messageId: string) => void
   'message-seen': (messageId: string) => void
+  'online-users': (userIds: string[]) => void
+  'error': (message: string) => void
 }
 
 export interface ClientToServerEvents {
-  'send-message': (data: { conversationId: string; content: string; type?: string }) => void
+  'send-message': (data: {
+    conversationId: string
+    content: string
+    type?: 'text' | 'image' | 'file'
+  }) => void
   'join-conversation': (conversationId: string) => void
   'leave-conversation': (conversationId: string) => void
   'typing-start': (conversationId: string) => void

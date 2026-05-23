@@ -10,6 +10,8 @@ import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import messageRouter from "./routes/message.routes";
 import conversationRouter from "./routes/conversation.routes";
+import { socketAuthMiddleware } from "./middlewares/socket.middleware";
+import { registerSocketHandlers } from "./socket/socket.handlers";
 
 const app = express()
 const httpServer = createServer(app)
@@ -36,6 +38,11 @@ io.on("connection", (socket) => {
   socket.on('disconnect', () => {
     console.log('Socket disconnected:', socket.id)
   })
+})
+
+io.use(socketAuthMiddleware)
+io.on('connection', (socket) => {
+  registerSocketHandlers(io, socket)
 })
 
 const PORT = process.env.PORT || 5000
