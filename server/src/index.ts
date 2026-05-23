@@ -21,16 +21,15 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpSer
   }
 })
 
-app.use(clerkMiddleware())
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }))
+app.use(clerkMiddleware())
 app.use(express.json())
-app.use('/api/auth', authRouter)
-app.use('/api/conversations', conversationRouter)
-app.use('/api/messages', messageRouter)
-app.use('/api/users', userRouter)
 
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
 app.use('/api/auth', authRouter)
+app.use('/api/users', userRouter)
+app.use('/api/conversations', conversationRouter)
+app.use('/api/messages', messageRouter)
 
 io.on("connection", (socket) => {
   console.log('Socket connected:', socket.id)
@@ -38,7 +37,6 @@ io.on("connection", (socket) => {
     console.log('Socket disconnected:', socket.id)
   })
 })
-
 
 const PORT = process.env.PORT || 5000
 
