@@ -1,14 +1,24 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@clerk/nextjs'
 
-export default async function Home() {
-  const user = await currentUser()
+export default function RootPage() {
+  const { isSignedIn, isLoaded } = useAuth()
+  const router = useRouter()
 
-  if (!user) redirect('/sign-in')
+  useEffect(() => {
+    if (!isLoaded) return
+    if (isSignedIn) {
+      router.replace('/chat')
+    } else {
+      router.replace('/sign-in')
+    }
+  }, [isLoaded, isSignedIn])
 
-  try {
-    const token = await (await import('@clerk/nextjs/server')).auth()
-  } catch { }
-
-  redirect('/chat')
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 }

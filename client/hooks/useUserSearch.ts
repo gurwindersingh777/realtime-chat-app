@@ -11,7 +11,7 @@ export const useUserSearch = (query: string) => {
   return useQuery({
     queryKey: ['users', 'search', debouncedQuery],
     queryFn: async () => {
-      const { data } = await api.get<{ users: User }>(`/api/users/search?q=${debouncedQuery}`)
+      const { data } = await api.get<{ users: User[] }>(`/api/users/search?q=${debouncedQuery}`)
       return data.users
     },
     enabled: debouncedQuery.length >= 2

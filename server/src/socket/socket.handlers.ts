@@ -23,7 +23,6 @@ export const registerSocketHandlers = (
 
       io.emit('user-online', clerkId)
       socket.emit('online-users', getOnlineUsers())
-      console.log(`${clerkId} connected`)
     } catch (error) {
       console.error('Connect handler error:', error)
     }
@@ -33,14 +32,12 @@ export const registerSocketHandlers = (
   const handleJoinConversation = async (conversationId: string) => {
     try {
       const currentUser = await User.findOne({ clerkId })
-      const conversation = await User.findOne({ _id: conversationId, participants: currentUser._id })
+      const conversation = await Conversation.findOne({ _id: conversationId, participants: currentUser._id })
       if (!conversation) {
         socket.emit('error', "Not a participant of this conversation")
         return
       }
-
       socket.join(conversationId)
-      console.log(`${clerkId} joined room ${conversationId}`)
     } catch (error) {
       console.error('Join conversation error:', error)
     }
@@ -81,9 +78,8 @@ export const registerSocketHandlers = (
       })
 
       const populated = await message.populate('sender', 'username avatar clerkId')
+      
       io.to(conversationId).emit('receive-message', populated.toObject() as any)
-
-      console.log(`Message sent in ${conversationId} by ${clerkId}`)
     } catch (error) {
       console.error('Send message error:', error)
     }
@@ -128,7 +124,6 @@ export const registerSocketHandlers = (
       await User.findOneAndUpdate({ clerkId }, { isOnline: false, lastSeen: new Date() })
 
       io.emit('user-offline', clerkId)
-      console.log(`${clerkId} disconnected`)
     } catch (error) {
       console.error('Disconnect handler error:', error)
     }

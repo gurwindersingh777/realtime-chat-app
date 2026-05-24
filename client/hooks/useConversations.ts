@@ -26,3 +26,16 @@ export const useCreateDM = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['conversations'] }),
   })
 }
+
+export const useConversation = (conversationId: string) => {
+  const api = useApi()
+
+  return useQuery({
+    queryKey: ['conversation', conversationId],
+    queryFn: async () => {
+      const { data } = await api.get<{ conversation: Conversation }>(`/api/conversations/${conversationId}`)
+      return data.conversation
+    },
+    enabled: !!conversationId,
+  })
+}

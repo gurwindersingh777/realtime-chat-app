@@ -19,7 +19,20 @@ export const useSocket = () => {
       const socket = getSocket()
 
       socket.auth = { token }
-      socket.connect()
+
+      socket.off('connect')
+      socket.off('disconnect')
+      socket.off('connect_error')
+      socket.off('online-users')
+      socket.off('user-online')
+      socket.off('user-offline')
+      socket.off('receive-message')
+      socket.off('typing-start')
+      socket.off('typing-stop')
+
+      if (!socket.connected) {
+        socket.connect()
+      }
 
       socket.on('connect', () => {
         console.log('Socket connected')
@@ -46,7 +59,7 @@ export const useSocket = () => {
       socket.on('typing-start', ({ userId, conversationId }) => {
         addTypingUser(conversationId, userId)
       })
-      
+
       socket.on('typing-stop', ({ userId, conversationId }) => {
         removeTypingUser(conversationId, userId)
       })
@@ -56,7 +69,15 @@ export const useSocket = () => {
 
     return () => {
       const socket = getSocket()
-      socket.disconnect()
+      socket.off('connect')
+      socket.off('disconnect')
+      socket.off('connect_error')
+      socket.off('online-users')
+      socket.off('user-online')
+      socket.off('user-offline')
+      socket.off('receive-message')
+      socket.off('typing-start')
+      socket.off('typing-stop')
     }
   }, [isSignedIn])
 }

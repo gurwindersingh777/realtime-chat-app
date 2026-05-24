@@ -15,13 +15,35 @@ conversationRouter.get('/', async (req: Request, res: Response) => {
     }
 
     const conversations = await Conversation.find({ participants: currentUser._id })
-      .populate('participants', 'username email avatar isOnline lastSeen')
+      .populate('participants', 'username email avatar isOnline lastSeen  clerkId')
       .populate('lastMessage')
       .sort({ lastMessageAt: -1 })
 
     res.json({ conversations })
   } catch (error) {
     console.error('Get conversations error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+conversationRouter.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const currentUser = await User.findOne({ clerkId: req.userId })
+
+    const conversation = await Conversation.findOne({
+      _id: req.params.id,
+      participants: currentUser?._id,
+    })
+      .populate('participants', 'username email avatar isOnline lastSeen clerkId')
+      .populate('lastMessage')
+
+    if (!conversation) {
+      res.status(404).json({ message: 'Conversation not found' })
+      return
+    }
+
+    res.json({ conversation })
+  } catch (error) {
     res.status(500).json({ message: 'Server error' })
   }
 })
@@ -37,7 +59,7 @@ conversationRouter.post('/dm', async (req: Request, res: Response) => {
 
     const existingConversation = await Conversation.findOne(
       { isGroup: false, participants: { $all: [currentUser._id, targetUserId] } })
-      .populate('participants', 'username email avatar isOnline lastSeen')
+      .populate('participants', 'username email avatar isOnline lastSeen  clerkId')
       .populate('lastMessage')
 
     if (existingConversation) {
@@ -86,10 +108,7 @@ conversationRouter.post('/group', async (req: Request, res: Response) => {
       admin: currentUser._id
     })
 
-    const populated = await conversation.populate(
-      'participants',
-      'username email avatar isOnline lastSeen'
-    )
+    const populated = await conversation.populate('participants', 'username email avatar isOnline lastSeen  clerkId')
 
     res.status(201).json({ conversation: populated })
   } catch (error) {

@@ -26,7 +26,7 @@ messageRouter.get('/:conversationId', async (req: Request, res: Response) => {
     }
 
     const messages = await Message.find({ conversationId })
-      .populate('sender', 'username avatar')
+      .populate('sender', 'username avatar clerkId')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -65,7 +65,7 @@ messageRouter.post('/', async (req: Request, res: Response) => {
       lastMessageAt: new Date(),
     })
 
-    const populated = await message.populate('sender', 'username avatar')
+    const populated = await message.populate('sender', 'username avatar clerkId')
 
     res.status(201).json({ message: populated })
   } catch (error) {
