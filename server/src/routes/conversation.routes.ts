@@ -2,6 +2,7 @@ import { Response, Request, Router } from "express"
 import { protect } from "../middlewares/auth.middleware"
 import { User } from "../models/user.model"
 import { Conversation } from "../models/conversation.model"
+import { Message } from "../models/message.model"
 
 const conversationRouter = Router()
 
@@ -19,7 +20,18 @@ conversationRouter.get('/', async (req: Request, res: Response) => {
       .populate('lastMessage')
       .sort({ lastMessageAt: -1 })
 
-    res.json({ conversations })
+    const conversationsWithUnread = await Promise.all(
+      conversations.map(async (conv) => {
+        const unreadCount = await Message.countDocuments({
+          conversationId: conv._id,
+          sender: { $ne: currentUser._id },
+          status: { $ne: 'seen' },
+        })
+        return { ...conv.toObject(), unreadCount }
+      })
+    )
+
+    res.json({ conversations: conversationsWithUnread })
   } catch (error) {
     console.error('Get conversations error:', error)
     res.status(500).json({ message: 'Server error' })

@@ -26,7 +26,7 @@ export interface Conversation {
   groupName?: string
   groupAvatar?: string
   lastMessage?: Message
-  unreadCount?: number
+  unreadCount: number
   createdAt: Date
 }
 

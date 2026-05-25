@@ -39,3 +39,19 @@ export const useConversation = (conversationId: string) => {
     enabled: !!conversationId,
   })
 }
+
+export const useCreateGroup = () => {
+  const api = useApi()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: { participantIds: string[]; groupName: string }) => {
+      const { data: res } = await api.post<{ conversation: Conversation }>(
+        '/api/conversations/group',
+        data
+      )
+      return res.conversation
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['conversations'] }),
+  })
+}

@@ -25,6 +25,8 @@ export default function ChatHeader({ conversationId }: { conversationId: string 
 
   const conversation = activeConversation || fetchedConversation
 
+  const memberCount = conversation?.isGroup ? conversation.participants.length : null
+
   if (!conversation) return (
     <div className="h-16 border-b border-neutral-600 px-4 flex items-center gap-3">
       <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
@@ -65,9 +67,13 @@ export default function ChatHeader({ conversationId }: { conversationId: string 
       <div>
         <p className="font-medium text-sm">{displayName}</p>
         <p className="text-xs text-muted-foreground">
-          {isOnline ? 'Online' : otherParticipant?.lastSeen
-            ? `Last seen ${format(new Date(otherParticipant.lastSeen), 'HH:mm')}`
-            : 'Offline'}
+          {conversation.isGroup
+            ? `${memberCount} members`
+            : isOnline
+              ? 'Online'
+              : otherParticipant?.lastSeen
+                ? `Last seen ${format(new Date(otherParticipant.lastSeen), 'HH:mm')}`
+                : 'Offline'}
         </p>
       </div>
     </div>

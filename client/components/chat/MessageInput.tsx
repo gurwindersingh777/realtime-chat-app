@@ -64,7 +64,7 @@ export default function MessageInput({ conversationId }: { conversationId: strin
           }}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1 border-2 border-neutral-400 py-4 pb-5 focus:ring-neutral-700"
+          className="flex-1 text-sm border-2 border-neutral-400 py-4 pb-5 focus:ring-neutral-700"
         />
         <Button
           onClick={handleSend}

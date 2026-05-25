@@ -41,14 +41,14 @@ export default function ConversationItem({ conversation }: Props) {
     <button
       onClick={handleClick}
       className={cn(
-        'w-full flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left',
+        'w-full flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left mb-2',
         isActive
           ? 'bg-neutral-900 text-white'
           : 'hover:bg-neutral-900/60'
       )}
     >
       <div className="relative shrink-0">
-        <Avatar className="w-8 h-8">
+        <Avatar className="w-7 h-7">
           <AvatarImage src={avatar} />
           <AvatarFallback>{displayName?.[0]?.toUpperCase()}</AvatarFallback>
         </Avatar>
@@ -58,19 +58,27 @@ export default function ConversationItem({ conversation }: Props) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center">
-          <span className="font-medium text-sm truncate">{displayName}</span>
+        <div className="flex justify-between items-center mb-0.5">
+          <span className="font-medium text-xs truncate">{displayName}</span>
           {conversation.lastMessage && (
-            <span className="text-xs text-muted-foreground shrink-0 ml-1">
+            <span className="text-[11px] text-muted-foreground shrink-0 ml-1">
               {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), {
-                addSuffix: false,
+                addSuffix: true,
               })}
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground truncate">
-          {conversation.lastMessage?.content || 'No messages yet'}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-xs font-light text-muted-foreground truncate flex-1">
+            {conversation.lastMessage?.content || 'No messages yet'}
+          </p>
+        
+          {conversation.unreadCount > 0 && (
+            <span className="ml-2 min-w-4.5 h-4.5 bg-primary rounded-full text-[10px] text-primary-foreground flex items-center justify-center px-1 shrink-0">
+              {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+            </span>
+          )}
+        </div>
       </div>
     </button>
   )

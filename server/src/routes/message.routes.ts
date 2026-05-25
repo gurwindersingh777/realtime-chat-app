@@ -49,7 +49,7 @@ messageRouter.post('/', async (req: Request, res: Response) => {
 
     const conversation = await Conversation.findOne({ _id: conversationId, participants: currentUser._id, })
     if (!conversation) {
-      return res.status(403).json({ message: 'Not a participant' })   
+      return res.status(403).json({ message: 'Not a participant' })
     }
 
     const message = await Message.create({
@@ -70,6 +70,29 @@ messageRouter.post('/', async (req: Request, res: Response) => {
     res.status(201).json({ message: populated })
   } catch (error) {
     console.error('Send message error:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+messageRouter.post('/seen/:conversationId', async (req: Request, res: Response) => {
+  try {
+    const currentUser = await User.findOne({ clerkId: req.userId })
+    if (!currentUser) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    await Message.updateMany(
+      {
+        conversationId: req.params.conversationId,
+        sender: { $ne: currentUser._id },
+        status: { $ne: 'seen' },
+      },
+      { status: 'seen' }
+    )
+
+    res.status(200).json({ success: true })
+  } catch (error) {
+    console.error('messages seen error:', error)
     res.status(500).json({ message: 'Server error' })
   }
 })

@@ -18,7 +18,7 @@ export default function MessageList({ conversationId }: { conversationId: string
 
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-1">
+    <div className="flex-1 overflow-y-auto scrollbar-none p-4 space-y-1">
       {messages.map((message, index) => {
         const isOwn = message.sender.clerkId === user?.id
         const prevMessage = messages[index - 1]

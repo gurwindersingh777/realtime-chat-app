@@ -9,7 +9,7 @@ export default function Sidebar() {
   const { data: conversations, isLoading } = useConversations()
 
   return (
-    <aside className="w-80 border-r border-neutral-600 flex flex-col bg-background shrink-0 bg-neutral-800 text-neutral-200">
+    <aside className="w-65 border-r border-neutral-600 flex flex-col bg-background shrink-0 bg-neutral-800 text-neutral-200">
 
       <div className="h-16 p-4 border-b border-neutral-600 flex items-center justify-between">
         <div className="flex items-center gap-2">
